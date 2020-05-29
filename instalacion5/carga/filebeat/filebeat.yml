@@ -1,0 +1,6 @@
+filebeat.inputs:
+- type: log
+  paths:
+    - /home/ubuntu/environment/curso/elastic_public/instalacion4/carga/filebeat/apache.log 
+output.logstash:
+  hosts: ["localhost:5044"]

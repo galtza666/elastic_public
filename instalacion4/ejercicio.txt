@@ -1,0 +1,90 @@
+# Cambio cluster
+2 nodos data -> 4 data
+2 nodos data: Potentes
+2 nodos data: Debiles
+
+# 2 indices
+Indice A : 2 shards + 2 replicas -> Primarios estén en maquinas potentes
+Indice B : 4 shards + 1 replica
+
+Configurar tiempo de espera antes de movimiento de 2 minutos
+
+
+Paso 1: Crear atributos (tags) asociados a cada nodo:
+    node.attr.tamano: medio
+Paso 2: Agregar filtros de asignación para cada índica que se quiera controlar:
+    PUT mi_indice/_settings { "index.routing.allocation.[include|require|exclude].tamano" : "mediano" }
+
+Retraso en reubicar
+    index.unassigned.node_left.delayed_timeout
+index.routing.allocation.enable
+    Permite establecer a que fragmentos del índice en el cluster se le aplican los anteriores filtros.
+    Se puede establecer en:
+    all (predeterminado): permite filtrar la ubicación de todos los fragmentos del índice.
+    primaries - Permite filtrar la ubicación de fragmentos primarios.
+    new_primaries - Permite filtrar la ubicación de fragmentos primarios recién creados.
+    none - No se aplican filtros a la ubicación de fragmentos
+De Formador Cursos 1 para todos:  12:21 PM
+GET _search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+PUT miindice01
+
+PUT miindice01/_settings
+{
+  "index":{
+    "number_of_replicas" :1
+  }
+}
+
+GET miindice01/_settings
+
+HEAD miindice01
+
+DELETE miindice01
+
+PUT miindice01
+{
+  "settings":{
+    "number_of_shards" :2,
+    "number_of_replicas" :2
+  }
+}
+
+GET _nodes
+
+DELETE indice_a
+DELETE indice_b
+
+PUT indice_a
+{
+    "settings": {
+        "number_of_shards": 2,
+        "number_of_replicas": 2,
+        "index.routing.allocation.require.tamano" : "big",
+        "index.routing.allocation.enable" : "primaries"
+    }
+}
+
+PUT indice_a/_settings
+{
+    "settings": {
+        "index.routing.allocation.require.tamano" : "big",
+        "index.routing.allocation.enable" : "all"
+    }
+}
+
+PUT indice_b
+{
+    "settings": {
+        "number_of_shards": 4,
+        "number_of_replicas": 1,
+         "index.unassigned.node_left.delayed_timeout": "2s"
+    }
+}
+
+GET _cluster/allocation/explain

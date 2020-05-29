@@ -1,0 +1,38 @@
+###KIBANA:
+GET _search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+PUT miindice01
+
+PUT miindice01/_settings
+{
+    "index": {
+        "number_of_replicas": 1
+    }
+}
+
+GET miindice01/_settings
+
+HEAD miindice01
+
+DELETE miindice01
+
+PUT miindice01
+{
+    "settings": {
+        "number_of_shards": 2,
+        "number_of_replicas": 2
+    }
+}
+
+
+
+/etc/sysctl.conf
+
+vm.max_map_count to 262144
+vm.max_map_count=262144
+sudo sysctl -w vm.max_map_count=262144
